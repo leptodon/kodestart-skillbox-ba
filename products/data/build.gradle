@@ -16,6 +16,14 @@ android {
     buildConfigField 'boolean', 'RELEASE', 'Boolean.parseBoolean("false")'
   }
 
+  buildFeatures {
+    compose = true
+  }
+
+  composeOptions {
+    kotlinCompilerExtensionVersion Deps.composeVersion
+  }
+
   packagingOptions {
     resources.excludes += "DebugProbesKt.bin"
   }
@@ -31,10 +39,6 @@ android {
 }
 
 dependencies {
-  implementation project(":core")
-  implementation project(":auth:data")
-  implementation project(":auth:domain")
-  implementation project(path: ':products:domain')
-
+  implementation project(":core:ui:uikit")
   kapt Deps.toothpickProcessor
 }

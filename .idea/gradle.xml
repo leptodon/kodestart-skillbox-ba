@@ -23,6 +23,8 @@
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/core/ui/uikit" />
             <option value="$PROJECT_DIR$/products" />
+            <option value="$PROJECT_DIR$/products/data" />
+            <option value="$PROJECT_DIR$/products/domain" />
             <option value="$PROJECT_DIR$/products/ui" />
             <option value="$PROJECT_DIR$/routing" />
           </set>

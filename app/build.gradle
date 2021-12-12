@@ -34,7 +34,6 @@ android {
             versionNameSuffix '-dev'
             applicationIdSuffix '.dev'
             debuggable true
-
             buildConfigField 'boolean', 'DEV', 'Boolean.parseBoolean("true")'
         }
         release {

@@ -18,7 +18,7 @@ internal object EnterPasswordScreen {
     val loginLceState: LceState = LceState.None,
     val isPasswordProtected: Boolean = true,
     val enteredPassword: String = "",
-    val errorMessage: ErrorMessage? = null
+    val errorMessage: ErrorMessage? = null,
   )
 
   sealed class ErrorMessage {

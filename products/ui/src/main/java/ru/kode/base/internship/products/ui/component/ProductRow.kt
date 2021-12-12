@@ -2,11 +2,9 @@ package ru.kode.base.internship.products.ui.component
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -21,6 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.kode.base.internship.products.data.entity.Currency
+import ru.kode.base.internship.products.data.entity.PaymentSystem
 import ru.kode.base.internship.products.ui.R
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
@@ -210,27 +210,6 @@ internal fun RowDivider() {
   )
 }
 
-
-//₽ $ €
-enum class Currency(val resId: Int, val symbol: String) {
-  EUR(R.drawable.icon_eur, "€"),
-  USD(R.drawable.icon_usd, "\$"),
-  RUB(R.drawable.icon_rub, "₽"),
-}
-
-enum class PaymentSystem(val resId: Int) {
-  VISA(R.drawable.visa) {
-    override fun toString(): String {
-      return "visa"
-    }
-  },
-  MASTER_CARD(R.drawable.mastercard) {
-    override fun toString(): String {
-      return "mastercard"
-    }
-  }
-}
-
 @Composable
 @Preview(
   uiMode = UI_MODE_NIGHT_YES
@@ -295,27 +274,3 @@ fun SavingPreview() {
     }
   }
 }
-
-/*
-DepositExpandableView(
-  productName: String,
-  balance: String,
-  currency: Currency,
-  isExpand: Boolean
-)
-DepositView(
-  productName: String,
-  cardInfo: String,
-  cardNumber: String,
-  paymentSystem: PaymentSystem,
-  isBlock: Boolean,
-)
-SavingView(
-  productName: String,
-  balance: String,
-  currency: Currency,
-  rate: Number,
-  expiredAt: String,
-)
-*/
-

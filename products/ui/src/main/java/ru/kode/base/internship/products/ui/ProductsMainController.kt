@@ -1,6 +1,7 @@
 package ru.kode.base.internship.products.ui
 
-import android.content.res.Configuration
+import android.content.Context
+import android.view.View
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -27,14 +28,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.MutableStateFlow
+import ru.kode.base.internship.products.data.entity.Deposit
+import ru.kode.base.internship.products.data.entity.Saving
 import ru.kode.base.internship.products.ui.ProductsMainScreen.ViewIntents
 import ru.kode.base.internship.products.ui.ProductsMainScreen.ViewState
-import ru.kode.base.internship.products.ui.component.Currency
 import ru.kode.base.internship.products.ui.component.DepositView
-import ru.kode.base.internship.products.ui.component.PaymentSystem
 import ru.kode.base.internship.products.ui.component.RowDivider
 import ru.kode.base.internship.products.ui.component.SavingView
 import ru.kode.base.internship.ui.core.uikit.KodeBankBaseController
@@ -49,64 +48,35 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
     }
   }
 
-  private val depositList = mutableListOf(
-    Deposit("Карта зарплатная",
-      "Физическая",
-      "0123",
-      PaymentSystem.MASTER_CARD,
-      false),
-    Deposit("Дополнительная карта",
-      "Заблокирована",
-      "8435",
-      PaymentSystem.VISA,
-      true)
-  )
+  override fun onContextAvailable(context: Context) {
+    super.onContextAvailable(context)
+  }
 
-  private val savingList = mutableListOf(
-    Saving("Мой вклад",
-      "1 515 000,78",
-      Currency.RUB,
-      7.65,
-      "31.08.2024"),
-    Saving("Накопительный",
-      "3 719,19",
-      Currency.USD,
-      11.05,
-      "31.08.2024"),
-    Saving("EUR вклад",
-      "1 513,62",
-      Currency.EUR,
-      8.65,
-      "31.08.2026")
-  )
-
-  private val contentMap = mutableMapOf(
-    "deposit" to depositList,
-    "saving" to savingList
-  )
-
-  @Composable
-  override fun ScreenContent(state: ViewState) {
-    Screen(contentMap, "457 334,00 P")
+  override fun onAttach(view: View) {
+    super.onAttach(view)
+//    intents.getData
   }
 
   @Composable
-  fun Screen(content: Map<String, List<Products>>, balance: String) {
-    val depositContent = content["deposit"]?.filterIsInstance<Deposit>() ?: emptyList()
-    val savingsContent = content["saving"]?.filterIsInstance<Saving>() ?: emptyList()
+  override fun ScreenContent(state: ViewState) {
+    Screen("457 334,00 P", state)
+  }
+
+  @Composable
+  fun Screen(balance: String, state: ViewState) {
 
     Column(
       modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
       StatusBar()
       DepositList(
-        depositsList = depositContent,
+        depositsList = state.depositData,
         balance = balance
       )
       Spacer(
         modifier = Modifier.height(16.dp))
       SavingList(
-        savingsList = savingsContent
+        savingsList = state.savingData
       )
       PrimaryButton(
         modifier = Modifier
@@ -234,39 +204,4 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
       }
     }
   }
-
-  @Composable
-  @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-  fun PreviewScreen() {
-    AppTheme {
-      Screen(contentMap, "457 334,00 P")
-    }
-  }
 }
-
-open class Products {
-  open val productName: String = ""
-}
-
-data class DepositExpandable(
-  override val productName: String,
-  val balance: String,
-  val currency: Currency,
-  val isExpand: Boolean,
-) : Products()
-
-data class Deposit(
-  override val productName: String,
-  val cardInfo: String,
-  val cardNumber: String,
-  val paymentSystem: PaymentSystem,
-  val isBlock: Boolean,
-) : Products()
-
-data class Saving(
-  override val productName: String,
-  val balance: String,
-  val currency: Currency,
-  val rate: Number,
-  val expiredAt: String,
-) : Products()
