@@ -16,9 +16,9 @@ internal object ProductsMainScreen {
   @Immutable
   data class ViewState(
     val depositLceState: LceState = LceState.None,
-    val depositData: List<Deposit> = mutableListOf(),
+    var depositData: List<Deposit> = mutableListOf(),
     val savingLceState: LceState = LceState.None,
-    val savingData: List<Saving> = mutableListOf(),
+    var savingData: List<Saving> = mutableListOf(),
     val errorMessage: ErrorMessage? = null,
   )
 

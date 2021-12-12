@@ -1,11 +1,11 @@
 package ru.kode.base.internship.products.domain
 
 import kotlinx.coroutines.CoroutineScope
-import ru.kode.base.internship.core.domain.BaseUseCase
-import ru.kode.base.internship.core.domain.entity.LceState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import ru.kode.base.internship.core.domain.BaseUseCase
+import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.data.entity.Currency
 import ru.kode.base.internship.products.data.entity.Deposit
 import ru.kode.base.internship.products.data.entity.PaymentSystem
@@ -13,11 +13,11 @@ import ru.kode.base.internship.products.data.entity.Saving
 import javax.inject.Inject
 
 interface DataUseCase {
-  suspend fun getDepositData()
+  suspend fun getDepositData():List<Deposit>
   val depositState: Flow<LceState>
 
-  suspend fun getSavingData()
-  val savingState: Flow<List<Saving>>
+  suspend fun getSavingData():List<Saving>
+  val savingState: Flow<LceState>
 }
 
 internal class DataUseCaseImpl @Inject constructor(
@@ -29,31 +29,33 @@ internal class DataUseCaseImpl @Inject constructor(
     val savingState: LceState = LceState.None,
   )
 
-  override suspend fun getDepositData() {
+  override suspend fun getDepositData(): List<Deposit> {
     setState { copy(depositState = LceState.Loading) }
     try {
       setState { copy(depositState = LceState.Content) }
+      return depositList
     } catch (e: Exception) {
       setState { copy(depositState = LceState.Error(e.message)) }
     }
+    return emptyList()
   }
 
   override val depositState: Flow<LceState>
     get() = stateFlow.map { it.depositState }.distinctUntilChanged()
 
-  override suspend fun getSavingData() {
+  override suspend fun getSavingData(): List<Saving> {
     setState { copy(depositState = LceState.Loading) }
     try {
       setState { copy(depositState = LceState.Content) }
+      return savingList
     } catch (e: Exception) {
       setState { copy(depositState = LceState.Error(e.message)) }
     }
+    return emptyList()
   }
 
-  override val savingState: Flow<List<Saving>>
-    get() = stateFlow.map { savingList }.distinctUntilChanged()
-
-
+  override val savingState: Flow<LceState>
+    get() = stateFlow.map { it.depositState }.distinctUntilChanged()
 }
 
 private val depositList = mutableListOf(

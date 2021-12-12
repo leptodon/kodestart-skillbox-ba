@@ -16,23 +16,41 @@ internal class ProductsMainPresenter @Inject constructor(
   override fun MachineDsl<ViewState, Unit>.buildMachine() {
     initial = ViewState() to null
 
-    onEach(dataUseCase.depositState) {
-      transitionTo { state, lceState ->
+    onEach(dataUseCase.savingState) {
+      transitionTo { state, _ ->
         state.copy(
-          depositLceState = lceState,
+          savingData = state.savingData
+        )
+      }
+    }
+
+    onEach(intent(ViewIntents::getData)) {
+      action { _, newState, _ ->
+        if (newState.errorMessage == null) {
+          executeAsync {
+            newState.savingData = dataUseCase.getSavingData()
+          }
+        }
+      }
+    }
+
+    onEach(dataUseCase.depositState) {
+      transitionTo { state, _ ->
+        state.copy(
           depositData = state.depositData
         )
       }
     }
 
-//    onEach(dataUseCase.savingState) {
-//      transitionTo { state, lceState ->
-//        state.copy(
-//          savingData = state.savingData
-//        )
-//      }
-//    }
-
+    onEach(intent(ViewIntents::getData)) {
+      action { _, newState, _ ->
+        if (newState.errorMessage == null) {
+          executeAsync {
+            newState.depositData = dataUseCase.getDepositData()
+          }
+        }
+      }
+    }
   }
 
 }

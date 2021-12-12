@@ -1,7 +1,5 @@
 package ru.kode.base.internship.products.ui
 
-import android.content.Context
-import android.view.View
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -48,30 +46,16 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
     }
   }
 
-  override fun onContextAvailable(context: Context) {
-    super.onContextAvailable(context)
-  }
-
-  override fun onAttach(view: View) {
-    super.onAttach(view)
-//    intents.getData
-  }
-
   @Composable
   override fun ScreenContent(state: ViewState) {
-    Screen("457 334,00 P", state)
-  }
-
-  @Composable
-  fun Screen(balance: String, state: ViewState) {
-
+    if (state.savingData.isEmpty()) intents.getData()
     Column(
       modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
       StatusBar()
       DepositList(
         depositsList = state.depositData,
-        balance = balance
+        balance = "457 334,00 ₽"
       )
       Spacer(
         modifier = Modifier.height(16.dp))
@@ -83,7 +67,7 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
           .padding(16.dp, 16.dp, 16.dp, 24.dp)
           .fillMaxWidth(),
         text = stringResource(id = R.string.button_text),
-        onClick = {}
+        onClick = { intents.getData() }
       )
     }
   }
