@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Projects/android/myProjects/kodestart-skillbox-ba/core/ui/uikit/src/main/res/font/roboto_bold_family.xml" value="0.27037037037037037" />
+        <entry key="..\:/Projects/android/myProjects/kodestart-skillbox-ba/products/ui/src/main/res/drawable/button_rounded.xml" value="0.2722222222222222" />
+        <entry key="..\:/Projects/android/myProjects/kodestart-skillbox-ba/products/ui/src/main/res/drawable/chevron_down.xml" value="0.3675925925925926" />
+        <entry key="..\:/Projects/android/myProjects/kodestart-skillbox-ba/products/ui/src/main/res/drawable/chevron_up.xml" value="0.3880208333333333" />
+        <entry key="..\:/Projects/android/myProjects/kodestart-skillbox-ba/products/ui/src/main/res/drawable/expand_more.xml" value="0.34444444444444444" />
+        <entry key="..\:/Projects/android/myProjects/kodestart-skillbox-ba/products/ui/src/main/res/drawable/group.xml" value="0.3880208333333333" />
+        <entry key="..\:/Projects/android/myProjects/kodestart-skillbox-ba/products/ui/src/main/res/drawable/ic_rub.xml" value="0.382051282051282" />
+        <entry key="..\:/Projects/android/myProjects/kodestart-skillbox-ba/products/ui/src/main/res/drawable/input.xml" value="0.382051282051282" />
+        <entry key="..\:/Projects/android/myProjects/kodestart-skillbox-ba/products/ui/src/main/res/drawable/visa.xml" value="0.382051282051282" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

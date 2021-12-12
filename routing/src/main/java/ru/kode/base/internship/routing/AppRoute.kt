@@ -10,4 +10,8 @@ sealed class AppRoute(override val path: String) : Route {
     object UserIdentificationKey : Login("/login/user_identification")
     object EnterPassword : Login("/login/password")
   }
+
+  sealed class Product(path: String) : AppRoute(path) {
+    object Main : Product("/product")
+  }
 }

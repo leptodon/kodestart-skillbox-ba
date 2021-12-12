@@ -16,6 +16,7 @@ object Deps {
   const val composeUi = "androidx.compose.ui:ui:$composeVersion"
   const val composeMaterial = "androidx.compose.material:material:$composeVersion"
   const val composeMaterialIcons = "androidx.compose.material:material-icons-core:$composeVersion"
+  const val composeMaterialIconsExtended = "androidx.compose.material:material-icons-extended:$composeVersion"
   const val composeTooling = "androidx.compose.ui:ui-tooling:$composeVersion"
   const val composeRuntime = "androidx.compose.runtime:runtime:$composeVersion"
 

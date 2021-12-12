@@ -54,6 +54,7 @@ dependencies {
   api Deps.composeUi
   api Deps.composeMaterial
   api Deps.composeMaterialIcons
+  api Deps.composeMaterialIconsExtended
   api Deps.composeTooling
   api Deps.composeRuntime
   api Deps.accompanistInsets

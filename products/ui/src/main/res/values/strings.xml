@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="title">Главная</string>
+  <string name="button_text">"Открыть новый счет или продукт"</string>
+  <string name="deposit_title">"Главная"</string>
+  <string name="seving_title">Главная</string>
+</resources>
