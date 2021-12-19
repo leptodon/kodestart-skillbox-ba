@@ -24,7 +24,7 @@ internal class AuthUseCaseImpl @Inject constructor(
 
   data class State(
     val userIdentificationState: LceState = LceState.None,
-    val loginState: LceState = LceState.None
+    val loginState: LceState = LceState.None,
   )
 
   override suspend fun identifyUser(phoneNumber: String) {

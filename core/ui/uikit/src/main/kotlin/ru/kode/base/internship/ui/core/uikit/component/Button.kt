@@ -46,7 +46,6 @@ fun PrimaryButton(
   )
 }
 
-
 @Suppress("LongMethod") // complex composable
 @Composable
 internal fun Button(

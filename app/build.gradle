@@ -34,7 +34,6 @@ android {
             versionNameSuffix '-dev'
             applicationIdSuffix '.dev'
             debuggable true
-
             buildConfigField 'boolean', 'DEV', 'Boolean.parseBoolean("true")'
         }
         release {
@@ -61,6 +60,7 @@ dependencies {
     implementation project(":core:data")
     implementation project(":routing")
     implementation project(":auth:ui")
+    implementation project(":products:ui")
 
     implementation Deps.coil
     implementation Deps.firebaseCore
