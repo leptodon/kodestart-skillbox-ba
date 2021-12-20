@@ -27,13 +27,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import ru.kode.base.internship.products.data.entity.Deposit
-import ru.kode.base.internship.products.data.entity.Saving
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.ui.ProductsMainScreen.ViewIntents
 import ru.kode.base.internship.products.ui.ProductsMainScreen.ViewState
+import ru.kode.base.internship.products.ui.component.CardView
 import ru.kode.base.internship.products.ui.component.DepositView
 import ru.kode.base.internship.products.ui.component.RowDivider
-import ru.kode.base.internship.products.ui.component.SavingView
+import ru.kode.base.internship.products.ui.utils.getResByCurrency
+import ru.kode.base.internship.products.ui.utils.getSymbol
 import ru.kode.base.internship.ui.core.uikit.KodeBankBaseController
 import ru.kode.base.internship.ui.core.uikit.component.PrimaryButton
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
@@ -48,27 +52,35 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
 
   @Composable
   override fun ScreenContent(state: ViewState) {
-    if (state.savingData.isEmpty()) intents.getData()
-    Column(
-      modifier = Modifier.verticalScroll(rememberScrollState())
+    SwipeRefresh(
+      state = rememberSwipeRefreshState(isRefreshing = state.cardsLceState == LceState.Loading),
+      onRefresh = {
+        intents.getData()
+      },
+      indicator = { state, trigger ->
+        SwipeRefreshIndicator(
+          state = state,
+          refreshTriggerDistance = trigger,
+          backgroundColor = AppTheme.colors.backgroundPrimary
+        )
+      }
     ) {
-      StatusBar()
-      DepositList(
-        depositsList = state.depositData,
-        balance = "457 334,00 ₽"
-      )
-      Spacer(
-        modifier = Modifier.height(16.dp))
-      SavingList(
-        savingsList = state.savingData
-      )
-      PrimaryButton(
-        modifier = Modifier
-          .padding(16.dp, 16.dp, 16.dp, 24.dp)
-          .fillMaxWidth(),
-        text = stringResource(id = R.string.button_text),
-        onClick = { intents.getData() }
-      )
+      Column(
+        modifier = Modifier.verticalScroll(rememberScrollState())
+      ) {
+        StatusBar()
+        DepositList(state)
+        Spacer(
+          modifier = Modifier.height(16.dp))
+        DepositsList(state)
+        PrimaryButton(
+          modifier = Modifier
+            .padding(16.dp, 16.dp, 16.dp, 24.dp)
+            .fillMaxWidth(),
+          text = stringResource(id = R.string.button_text),
+          onClick = {}
+        )
+      }
     }
   }
 
@@ -88,9 +100,10 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
   }
 
   @Composable
-  fun DepositList(depositsList: List<Deposit>, balance: String) {
+  fun DepositList(state: ViewState) {
     var expanded by remember { mutableStateOf(true) }
-
+    val accounts = state.accounts[0]
+    val cards = state.cardDetails
     Column(
       modifier = Modifier
         .background(color = AppTheme.colors.backgroundSecondary)
@@ -111,7 +124,7 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
         verticalAlignment = Alignment.CenterVertically
       ) {
         Image(
-          painter = painterResource(id = R.drawable.icon_rub),
+          painter = painterResource(id = accounts.currency.getResByCurrency()),
           contentDescription = "")
         Column(
           modifier = Modifier
@@ -124,14 +137,14 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
           )
           Spacer(modifier = Modifier.height(4.dp))
           Text(
-            text = balance,
+            text = "${accounts.balance} ${accounts.currency.getSymbol()}",
             style = AppTheme.typography.body2
           )
         }
         IconButton(
           onClick = { expanded = !expanded }) {
           Image(
-            painter = if (expanded) painterResource(id = R.drawable.expand_more) else painterResource(id = R.drawable.expand_less),
+            painter = if (expanded) painterResource(id = R.drawable.ic_expand_more_40) else painterResource(id = R.drawable.ic_expand_less_40),
             null
           )
         }
@@ -139,15 +152,15 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
       Spacer(modifier = Modifier.height(16.dp))
       if (expanded) {
         Column {
-          depositsList.takeIf { it.isNotEmpty() }?.forEachIndexed { index, it ->
-            DepositView(
-              productName = it.productName,
-              cardInfo = it.cardInfo,
-              cardNumber = it.cardNumber,
+          cards.takeIf { it.isNotEmpty() }?.forEachIndexed { index, it ->
+            CardView(
+              name = it.name,
+              number = it.number,
               paymentSystem = it.paymentSystem,
-              isBlock = it.isBlock
+              status = it.status,
+              cardType = "Физическая"
             )
-            if (index != depositsList.size - 1) RowDivider()
+            if (index != accounts.cards.size.minus(1)) RowDivider()
           }
         }
       }
@@ -156,7 +169,7 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
 
   @Composable
   private
-  fun SavingList(savingsList: List<Saving>) {
+  fun DepositsList(state: ViewState) {
     Column(
       Modifier
         .animateContentSize(
@@ -176,15 +189,13 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
         style = AppTheme.typography.bodySemibold,
         color = AppTheme.colors.contendTertiary
       )
-      savingsList.takeIf { it.isNotEmpty() }?.forEachIndexed { index, it ->
-        SavingView(
-          productName = it.productName,
+      state.deposits.takeIf { it.isNotEmpty() }?.forEachIndexed { index, it ->
+        DepositView(
+          name = it.name,
           balance = it.balance,
           currency = it.currency,
-          rate = it.rate,
-          expiredAt = it.expiredAt
         )
-        if (index != savingsList.size - 1) RowDivider()
+        if (index != state.deposits.size.minus(1)) RowDivider()
       }
     }
   }

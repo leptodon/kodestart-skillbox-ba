@@ -78,12 +78,6 @@ data class AppTypography internal constructor(
     fontSize = 11.sp,
     lineHeight = 13.sp,
   ),
-  val caption3:  TextStyle = TextStyle(
-    fontFamily = Roboto,
-    fontWeight = FontWeight.Normal,
-    fontSize = 10.sp,
-    lineHeight = 12.sp,
-  ),
   val button: TextStyle = TextStyle(
     fontFamily = Roboto,
     fontWeight = FontWeight.SemiBold,

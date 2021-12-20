@@ -13,10 +13,11 @@ internal class AppFlowCoordinator @Inject constructor(
 ) : BaseFlowCoordinator<AppFlow.Event, Unit>(scope), AppFlow.Coordinator {
 
   override fun openInitialRoute(beforePushClearUntil: Route?) {
-    return router.push(
-      AppRoute.Login.UserIdentificationKey,
-      createContext(RouterTransitionType.None)
-    )
+//    return router.push(
+//      AppRoute.Login.UserIdentificationKey,
+//      createContext(RouterTransitionType.None)
+//    )
+    return router.push(AppRoute.Product.Main, createContext())
   }
 
   override fun handleEvent(event: AppFlow.Event) {

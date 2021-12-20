@@ -19,23 +19,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.kode.base.internship.products.data.entity.Currency
-import ru.kode.base.internship.products.data.entity.PaymentSystem
+import androidx.compose.ui.unit.sp
 import ru.kode.base.internship.products.ui.R
+import ru.kode.base.internship.products.ui.utils.getResByCurrency
+import ru.kode.base.internship.products.ui.utils.getResByPaymentSystem
+import ru.kode.base.internship.products.ui.utils.getSymbol
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
 
 @Composable
-internal fun DepositExpandableView(
-  productName: String,
-  balance: String,
-  currency: Currency,
+internal fun AccountList(
   isExpand: Boolean,
+  balance: Long,
+  currency: String,
+  status: String,
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically
   ) {
     Image(
-      painter = painterResource(id = currency.resId),
+      painter = painterResource(id = currency.getResByCurrency()),
       contentDescription = "icon",
       modifier = Modifier.padding(end = 16.dp)
     )
@@ -44,13 +46,13 @@ internal fun DepositExpandableView(
         .weight(1f)
     ) {
       Text(
-        text = productName,
+        text = "Счет расчетный",
         style = AppTheme.typography.body2)
       Spacer(
         modifier = Modifier.height(2.dp)
       )
       Text(
-        text = "$balance ${currency.symbol}",
+        text = "$balance ${currency.getSymbol()}",
         style = AppTheme.typography.body2.copy(fontWeight = FontWeight.W400),
         color = AppTheme.colors.contendAccentSecondary
       )
@@ -58,14 +60,14 @@ internal fun DepositExpandableView(
     IconButton(onClick = { }
     ) {
       Image(
-        painter = painterResource(id = R.drawable.group),
+        painter = painterResource(id = R.drawable.ic_card_background_40),
         contentDescription = "icon",
         modifier = Modifier
           .width(40.dp)
           .height(28.dp)
       )
       Image(
-        painter = if (isExpand) painterResource(id = R.drawable.expand_more) else painterResource(id = R.drawable.expand_less),
+        painter = if (isExpand) painterResource(id = R.drawable.ic_expand_more_40) else painterResource(id = R.drawable.ic_expand_less_40),
         null,
         Modifier
           .width(40.dp)
@@ -76,16 +78,16 @@ internal fun DepositExpandableView(
 }
 
 @Composable
-internal fun DepositView(
-  productName: String,
-  cardInfo: String,
-  cardNumber: String,
-  paymentSystem: PaymentSystem,
-  isBlock: Boolean,
+internal fun CardView(
+  number: String,
+  status: String,
+  name: String,
+  paymentSystem: String,
+  cardType: String,
 ) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(
-      painter = painterResource(id = R.drawable.input),
+      painter = painterResource(id = R.drawable.ic_input_40),
       contentDescription = "icon",
       modifier = Modifier.padding(end = 16.dp)
     )
@@ -94,53 +96,40 @@ internal fun DepositView(
         .weight(1f)
     ) {
       Text(
-        text = productName,
+        text = name,
         style = AppTheme.typography.body2)
       Spacer(
         modifier = Modifier.height(3.dp)
       )
-      if (isBlock) {
-        Text(
-          text = cardInfo,
-          style = AppTheme.typography.body2,
-          color = AppTheme.colors.indicatorContendError
-        )
-      } else {
-        Text(
-          text = cardInfo,
-          style = AppTheme.typography.body2,
-          color = AppTheme.colors.textSecondary
-        )
-      }
+      Text(
+        text = if (cardType=="physical") "Физическая" else "Виртуальная",
+        style = AppTheme.typography.body2,
+        color = if (status == "DEACTIVATED") AppTheme.colors.indicatorContendError else AppTheme.colors.textSecondary
+      )
     }
     IconButton(onClick = { }
     ) {
       Image(
-        painter = painterResource(id = R.drawable.group),
+        painter = painterResource(id = R.drawable.ic_card_background_40),
         contentDescription = "icon",
         modifier = Modifier
           .width(40.dp)
           .height(28.dp)
       )
       Column {
-        if (isBlock) {
-          Text(
-            text = cardNumber,
-            modifier = Modifier.padding(12.dp, 2.dp, 3.dp, 1.dp),
-            style = AppTheme.typography.caption3,
-            color = AppTheme.colors.textSecondary
-          )
-        } else {
-          Text(
-            text = cardNumber,
-            modifier = Modifier.padding(12.dp, 2.dp, 3.dp, 1.dp),
-            style = AppTheme.typography.caption3,
-            color = AppTheme.colors.textButton
-          )
-        }
+        Text(
+          text = number,
+          modifier = Modifier.padding(12.dp, 0.dp, 3.dp, 1.dp),
+          style = AppTheme.typography
+            .caption2.copy(
+              fontSize = 10.sp,
+              fontWeight = FontWeight.W400
+            ),
+          color = if (status == "DEACTIVATED") AppTheme.colors.textSecondary else AppTheme.colors.textButton
+        )
         Image(
-          painter = painterResource(id = paymentSystem.resId),
-          contentDescription = paymentSystem.toString(),
+          painter = painterResource(id = paymentSystem.getResByPaymentSystem()),
+          contentDescription = paymentSystem,
           Modifier.padding(19.dp, 0.dp, 5.dp, 1.dp)
         )
       }
@@ -150,15 +139,13 @@ internal fun DepositView(
 
 
 @Composable
-internal fun SavingView(
-  productName: String,
-  balance: String,
-  currency: Currency,
-  rate: Number,
-  expiredAt: String,
+internal fun DepositView(
+  balance: Long,
+  currency: String,
+  name: String,
 ) {
   Row(verticalAlignment = Alignment.CenterVertically) {
-    Image(painter = painterResource(id = currency.resId),
+    Image(painter = painterResource(id = currency.getResByCurrency()),
       contentDescription = "icon",
       Modifier.padding(end = 16.dp))
     Column(
@@ -167,12 +154,12 @@ internal fun SavingView(
     ) {
       Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-          text = productName,
+          text = name,
           Modifier.weight(1f),
           style = AppTheme.typography.body2,
           color = AppTheme.colors.textPrimary,
         )
-        Text(text = "Ставка $rate%",
+        Text(text = "Ставка ",
           textAlign = TextAlign.End,
           style = AppTheme.typography.caption2,
           color = AppTheme.colors.textSecondary)
@@ -180,13 +167,13 @@ internal fun SavingView(
       Spacer(modifier = Modifier.height(4.dp))
       Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-          text = "$balance ${currency.symbol}",
+          text = "$balance ${currency.getSymbol()}",
           Modifier.weight(1f),
           style = AppTheme.typography.body2,
           color = AppTheme.colors.contendAccentSecondary,
         )
         Text(modifier = Modifier.padding(end = 5.dp),
-          text = "до $expiredAt",
+          text = "до ", //$expiredAt
           textAlign = TextAlign.End,
           style = AppTheme.typography.caption2,
           color = AppTheme.colors.textSecondary)
@@ -214,13 +201,14 @@ internal fun RowDivider() {
 @Preview(
   uiMode = UI_MODE_NIGHT_YES
 )
-fun DepositExpandablePreview() {
+fun AccountsPreview() {
   AppTheme {
     Column {
-      DepositExpandableView("Карта зарплатная",
-        "457 334,00",
-        Currency.RUB,
-        true)
+      AccountList(
+        true,
+        457_334,
+        "RUB",
+        "DEACTIVE")
     }
   }
 }
@@ -229,20 +217,24 @@ fun DepositExpandablePreview() {
 @Preview(
   uiMode = UI_MODE_NIGHT_YES
 )
-fun DepositPreview() {
+fun CardsPreview() {
   AppTheme {
     Column {
-      DepositView("Карта зарплатная",
-        "Физическая",
-        "0123",
-        PaymentSystem.MASTER_CARD,
-        false)
-
-      DepositView("Дополнительная карта",
-        "Заблокирована",
+      CardView(
         "8435",
-        PaymentSystem.VISA,
-        true)
+        "ACTIVE",
+        "Карта зарплатная",
+        "Visa",
+        "physical"
+      )
+
+      CardView(
+        "5738",
+        "DEACTIVE",
+        "Дополнительная карта",
+        "MasterCard",
+        "digital"
+      )
     }
   }
 }
@@ -251,26 +243,26 @@ fun DepositPreview() {
 @Preview(
   uiMode = UI_MODE_NIGHT_YES
 )
-fun SavingPreview() {
+fun DepositsPreview() {
   AppTheme {
     Column {
-      SavingView(productName = "Мой вклад",
-        balance = "1 515 000,78",
-        currency = Currency.RUB,
-        7.65,
-        "31.08.2024")
+      DepositView(
+        currency = "RUB",
+        name = "Мой вклад",
+        balance = 1_515_000_78,
+      )
       RowDivider()
-      SavingView(productName = "Накопительный",
-        balance = "3 719,19",
-        currency = Currency.USD,
-        11.05,
-        "31.08.2024")
+      DepositView(
+        currency = "USD",
+        name = "Накопительный",
+        balance = 3_719_19,
+      )
       RowDivider()
-      SavingView(productName = "EUR вклад",
-        balance = "1 513,62",
-        currency = Currency.EUR,
-        8.65,
-        "31.08.2026")
+      DepositView(
+        currency = "EUR",
+        name = "EUR вклад",
+        balance = 1_513_62,
+      )
     }
   }
 }

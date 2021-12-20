@@ -50,7 +50,7 @@ internal class EnterPasswordController : KodeBankBaseController<ViewState, ViewI
   }
 
   override fun handleBack(): Boolean {
-    intents.navigateOnBack()
+    intents.navigateOnBack
     return true
   }
 
