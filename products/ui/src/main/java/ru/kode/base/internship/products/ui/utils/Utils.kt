@@ -1,6 +1,8 @@
 package ru.kode.base.internship.products.ui.utils
 
 import ru.kode.base.internship.products.ui.R
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 
 /** Конвертируем полученый код валюты в символ */
 fun String.getSymbol(): String {
@@ -38,3 +40,6 @@ fun String.getResByPaymentSystem(): Int {
   )
   return if (map.contains(this)) map[this]!! else 0
 }
+
+/** Конвертация даты к виду 31.08.2024 */
+fun String.toDate():String = OffsetDateTime.parse(this).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))

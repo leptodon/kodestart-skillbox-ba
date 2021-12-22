@@ -1,6 +1,5 @@
 package ru.kode.base.internship.products.ui
 
-import android.util.Log
 import ru.dimsuz.unicorn.coroutines.MachineDsl
 import ru.kode.base.core.coroutine.BasePresenter
 import ru.kode.base.internship.products.domain.ProductUseCase
@@ -15,13 +14,17 @@ internal class ProductsMainPresenter @Inject constructor(
 ) : BasePresenter<ViewState, ViewIntents, Unit>() {
 
   override fun MachineDsl<ViewState, Unit>.buildMachine() {
-    initial = ViewState() to { productUseCase.fetchAccounts() }
+    initial = ViewState() to {
+      productUseCase.fetchAccounts()
+      productUseCase.fetchCards()
+      productUseCase.fetchDeposits()
+    }
 
     onEach(intent(ViewIntents::getData)) {
-      action { state, newState, _ ->
-        productUseCase.fetchAccounts(true)
-        productUseCase.fetchCards(true)
-        productUseCase.fetchDeposits(true)
+      action { state, newState, payload ->
+        productUseCase.fetchAccounts(update = true)
+        productUseCase.fetchCards(update = true)
+        productUseCase.fetchDeposits(update = true)
       }
     }
 
@@ -29,6 +32,14 @@ internal class ProductsMainPresenter @Inject constructor(
       transitionTo { state, payload ->
         state.copy(
           accountsLceState = payload
+        )
+      }
+    }
+
+    onEach(productUseCase.accountsList) {
+      transitionTo { state, payload ->
+        state.copy(
+          accounts = payload
         )
       }
     }
@@ -49,18 +60,10 @@ internal class ProductsMainPresenter @Inject constructor(
       }
     }
 
-    onEach(productUseCase.resultCardDetailsList()) {
+    onEach(productUseCase.resultCardDetailsList) {
       transitionTo { state, payload ->
         state.copy(
-          cardDetails = payload
-        )
-      }
-    }
-
-    onEach(productUseCase.accountsList) {
-      transitionTo { state, payload ->
-        state.copy(
-          accounts = payload
+          accountWithCardDetails = payload
         )
       }
     }

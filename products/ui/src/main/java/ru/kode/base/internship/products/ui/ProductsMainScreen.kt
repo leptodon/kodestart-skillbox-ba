@@ -4,8 +4,10 @@ import androidx.compose.runtime.Immutable
 import ru.kode.base.core.BaseViewIntents
 import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.domain.entity.Account
+import ru.kode.base.internship.products.domain.entity.AccountWithCards
 import ru.kode.base.internship.products.domain.entity.CardDetails
 import ru.kode.base.internship.products.domain.entity.Deposit
+import ru.kode.base.internship.products.domain.entity.DepositDetails
 
 
 internal object ProductsMainScreen {
@@ -20,9 +22,8 @@ internal object ProductsMainScreen {
     var accountsLceState: LceState = LceState.None,
     var depositsLceState: LceState = LceState.None,
     var accounts: List<Account> = emptyList(),
-    var cardDetails: List<CardDetails> = emptyList(),
-    var deposits: List<Deposit> = emptyList(),
-    val errorMessage: ErrorMessage? = null,
+    var accountWithCardDetails: List<AccountWithCards> = emptyList(),
+    var deposits: List<DepositDetails> = emptyList(),
   )
 
   sealed class ErrorMessage {

@@ -4,17 +4,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ru.kode.base.internship.core.domain.BaseUseCase
 import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.domain.entity.Account
+import ru.kode.base.internship.products.domain.entity.AccountWithCards
 import ru.kode.base.internship.products.domain.entity.CardDetails
-import ru.kode.base.internship.products.domain.entity.Deposit
+import ru.kode.base.internship.products.domain.entity.DepositDetails
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -26,12 +26,11 @@ interface ProductUseCase {
   fun fetchCards(update: Boolean = false)
   val fetchCardState: Flow<LceState>
   fun cardDetails(id: Long): Flow<CardDetails>
-  fun resultCardDetailsList(): Flow<List<CardDetails>>
+  val resultCardDetailsList: Flow<List<AccountWithCards>>
 
   fun fetchDeposits(update: Boolean = false)
   val fetchDepositState: Flow<LceState>
-  val depositsList: Flow<List<Deposit>>
-
+  val depositsList: Flow<List<DepositDetails>>
 }
 
 internal class ProductUseCaseImpl @Inject constructor(
@@ -54,7 +53,6 @@ internal class ProductUseCaseImpl @Inject constructor(
       try {
         delay(TimeUnit.SECONDS.toMillis(1)) // Для визуального отображения, что крутилка работает
         accountRepository.fetchAccount(isNew = update)
-        accountRepository.accounts
         setState { copy(accountsState = LceState.Content) }
       } catch (e: Exception) {
         setState { copy(accountsState = LceState.Error(e.message)) }
@@ -84,19 +82,26 @@ internal class ProductUseCaseImpl @Inject constructor(
 
   override fun cardDetails(id: Long): Flow<CardDetails> = cardRepository.cardDetails(id = id)
 
-  override fun resultCardDetailsList(): Flow<List<CardDetails>> = flow {
-    val cardDetailsList = mutableListOf<CardDetails>()
-    accountRepository.accounts.collect { accounts ->
-      accounts.forEach {
-        it.cards.forEach { id ->
-          withContext(Dispatchers.IO) {
-            cardDetails(id)
-          }.collect { cd -> cardDetailsList.add(cd) }
+  override val resultCardDetailsList: Flow<List<AccountWithCards>>
+    get() {
+      return accountRepository.accounts.flatMapLatest { accounts ->
+        val listOfAccountWithCardsFlow = accounts.map { account ->
+          val cardsFlow = account.cards.map { cardId -> cardRepository.cardDetails(cardId) }
+          combine(cardsFlow) { it.toList() }
+            .map {
+              AccountWithCards(
+                accountId = account.accountId,
+                currency = account.currency,
+                status = account.status,
+                balance = account.balance,
+                number = account.number,
+                cards = it
+              )
+            }
         }
+        combine(listOfAccountWithCardsFlow) { it.toList() }
       }
     }
-    emit(cardDetailsList.toList())
-  }
 
   override val fetchCardState: Flow<LceState>
     get() = stateFlow.map { it.cardsState }.distinctUntilChanged()
@@ -118,7 +123,7 @@ internal class ProductUseCaseImpl @Inject constructor(
     get() = stateFlow.map { it.depositsState }.distinctUntilChanged()
 
 
-  override val depositsList: Flow<List<Deposit>>
+  override val depositsList: Flow<List<DepositDetails>>
     get() = depositRepository.deposits
 
 }

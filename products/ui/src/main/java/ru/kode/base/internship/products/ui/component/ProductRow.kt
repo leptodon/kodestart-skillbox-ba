@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,7 +47,7 @@ internal fun AccountList(
         .weight(1f)
     ) {
       Text(
-        text = "Счет расчетный",
+        text = stringResource(id = R.string.main_account),
         style = AppTheme.typography.body2)
       Spacer(
         modifier = Modifier.height(2.dp)
@@ -102,7 +103,7 @@ internal fun CardView(
         modifier = Modifier.height(3.dp)
       )
       Text(
-        text = if (cardType=="physical") "Физическая" else "Виртуальная",
+        text = if (cardType == "physical") stringResource(id = R.string.phisical) else stringResource(id = R.string.digital),
         style = AppTheme.typography.body2,
         color = if (status == "DEACTIVATED") AppTheme.colors.indicatorContendError else AppTheme.colors.textSecondary
       )
@@ -143,6 +144,8 @@ internal fun DepositView(
   balance: Long,
   currency: String,
   name: String,
+  rate: Double,
+  expire: String,
 ) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(painter = painterResource(id = currency.getResByCurrency()),
@@ -159,7 +162,7 @@ internal fun DepositView(
           style = AppTheme.typography.body2,
           color = AppTheme.colors.textPrimary,
         )
-        Text(text = "Ставка ",
+        Text(text = "${stringResource(id = R.string.rate)} $rate%",
           textAlign = TextAlign.End,
           style = AppTheme.typography.caption2,
           color = AppTheme.colors.textSecondary)
@@ -173,7 +176,7 @@ internal fun DepositView(
           color = AppTheme.colors.contendAccentSecondary,
         )
         Text(modifier = Modifier.padding(end = 5.dp),
-          text = "до ", //$expiredAt
+          text = "${stringResource(id = R.string.until)} $expire",
           textAlign = TextAlign.End,
           style = AppTheme.typography.caption2,
           color = AppTheme.colors.textSecondary)
@@ -250,18 +253,24 @@ fun DepositsPreview() {
         currency = "RUB",
         name = "Мой вклад",
         balance = 1_515_000_78,
+        rate = 7.7,
+        expire = "2022-04-21T00:00:00Z",
       )
       RowDivider()
       DepositView(
         currency = "USD",
         name = "Накопительный",
         balance = 3_719_19,
+        rate = 7.7,
+        expire = "2022-04-21T00:00:00Z",
       )
       RowDivider()
       DepositView(
         currency = "EUR",
         name = "EUR вклад",
         balance = 1_513_62,
+        rate = 7.7,
+        expire = "2022-04-21T00:00:00Z",
       )
     }
   }

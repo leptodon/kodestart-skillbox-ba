@@ -1,32 +1,43 @@
 package ru.kode.base.internship.products.data
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
-import ru.kode.base.internship.products.domain.DepositRepository
+import ru.kode.base.internship.products.domain.entity.Account
+import ru.kode.base.internship.products.domain.entity.CardDetails
 import ru.kode.base.internship.products.domain.entity.Deposit
 import ru.kode.base.internship.products.domain.entity.DepositDetails
-import javax.inject.Inject
 
-class DepositRepositoryImpl @Inject constructor() : DepositRepository {
-  private val stateFlowList = MutableStateFlow(generateDepositList())
-  private val stateFlowDetails = MutableStateFlow(generateDepositDetails())
+class Mock {
 
-  override suspend fun fetchDeposits(isNew: Boolean) {
-    if (isNew) {
-      stateFlowList.emit(generateDepositList())
-      stateFlowDetails.emit(generateDepositDetails())
-    }
-  }
+  val account = Account(
+    accountId = 0,
+    number = "1228568263446708",
+    balance = (10000..999999).random().toLong(),
+    currency = "EUR",
+    status = "Активен",
+    cards = listOf(1, 2)
+  )
 
-  override val deposits: Flow<List<DepositDetails>> = stateFlowDetails
+  val cardList = listOf(
+    CardDetails(
+      id = 2,
+      accountId = 0,
+      number = (1000..9999).random().toString(),
+      status = "DEACTIVE",
+      name = "Кредитная карта",
+      paymentSystem = "MASTERCARD",
+      expiredAt = "2022-04-21T00:00:00Z"
+    ),
+    CardDetails(
+      id = 1,
+      accountId = 0,
+      number = (1000..9999).random().toString(),
+      status = "ACTIVE",
+      name = "Дебетовая карта",
+      paymentSystem = "VISA",
+      expiredAt = "2022-04-21T00:00:00Z"
+    )
+  )
 
-  override fun term(id: Long): Flow<DepositDetails> = flow {
-    generateDepositDetails()
-      .find { it.name == generateDepositList().find { depo -> depo.depositId == id }?.name }?.let { emit(it) }
-  }
-
-  private fun generateDepositList() = listOf(
+  val depositList = listOf(
     Deposit(
       depositId = 1,
       balance = (1000..9999).random().toLong(),
@@ -50,28 +61,28 @@ class DepositRepositoryImpl @Inject constructor() : DepositRepository {
     )
   )
 
-  private fun generateDepositDetails() = listOf(
+  val depositDetails = listOf(
     DepositDetails(
       currency = "RUB",
       status = "Активен",
       name = "Накопительный",
-      balance = (1000..9999).random().toLong(),
+      balance = 125134,
       rate = 7.5,
       closeDate = "2022-04-21T00:00:00Z",
     ),
     DepositDetails(
-      currency = "USD",
+      currency = "RUB",
       status = "Активен",
       name = "Сберегательный",
-      balance = (1000..9999).random().toLong(),
+      balance = 125134,
       rate = 7.5,
       closeDate = "2022-04-21T00:00:00Z",
     ),
     DepositDetails(
-      currency = "EUR",
+      currency = "RUB",
       status = "Активен",
       name = "Счет в Eur",
-      balance = (1000..9999).random().toLong(),
+      balance = 125134,
       rate = 7.5,
       closeDate = "2022-04-21T00:00:00Z",
     )

@@ -38,6 +38,7 @@ import ru.kode.base.internship.products.ui.component.DepositView
 import ru.kode.base.internship.products.ui.component.RowDivider
 import ru.kode.base.internship.products.ui.utils.getResByCurrency
 import ru.kode.base.internship.products.ui.utils.getSymbol
+import ru.kode.base.internship.products.ui.utils.toDate
 import ru.kode.base.internship.ui.core.uikit.KodeBankBaseController
 import ru.kode.base.internship.ui.core.uikit.component.PrimaryButton
 import ru.kode.base.internship.ui.core.uikit.theme.AppTheme
@@ -57,9 +58,9 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
       onRefresh = {
         intents.getData()
       },
-      indicator = { state, trigger ->
+      indicator = { iState, trigger ->
         SwipeRefreshIndicator(
-          state = state,
+          state = iState,
           refreshTriggerDistance = trigger,
           backgroundColor = AppTheme.colors.backgroundPrimary
         )
@@ -102,8 +103,7 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
   @Composable
   fun DepositList(state: ViewState) {
     var expanded by remember { mutableStateOf(true) }
-    val accounts = state.accounts[0]
-    val cards = state.cardDetails
+    val accounts = state.accountWithCardDetails[0]
     Column(
       modifier = Modifier
         .background(color = AppTheme.colors.backgroundSecondary)
@@ -113,7 +113,7 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
         verticalAlignment = Alignment.CenterVertically
       ) {
         Text(
-          text = "Счета",
+          text = stringResource(id = R.string.account),
           modifier = Modifier
             .padding(bottom = 17.dp)
             .fillMaxSize(),
@@ -132,7 +132,7 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
             .padding(start = 16.dp)
         ) {
           Text(
-            text = "Счет расчетный",
+            text = stringResource(id = R.string.main_account),
             style = AppTheme.typography.body2
           )
           Spacer(modifier = Modifier.height(4.dp))
@@ -152,13 +152,13 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
       Spacer(modifier = Modifier.height(16.dp))
       if (expanded) {
         Column {
-          cards.takeIf { it.isNotEmpty() }?.forEachIndexed { index, it ->
+          accounts.takeIf { it.cards.isNotEmpty() }?.cards?.forEachIndexed { index, it ->
             CardView(
               name = it.name,
               number = it.number,
               paymentSystem = it.paymentSystem,
               status = it.status,
-              cardType = "Физическая"
+              cardType = stringResource(id = R.string.phisical)
             )
             if (index != accounts.cards.size.minus(1)) RowDivider()
           }
@@ -182,7 +182,7 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
         .padding(16.dp)
     ) {
       Text(
-        text = "Вклады",
+        text = stringResource(R.string.deposits),
         modifier = Modifier
           .padding(bottom = 16.dp)
           .fillMaxSize(),
@@ -191,9 +191,11 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
       )
       state.deposits.takeIf { it.isNotEmpty() }?.forEachIndexed { index, it ->
         DepositView(
-          name = it.name,
+          name = it.name?:"",
           balance = it.balance,
           currency = it.currency,
+          rate = it.rate,
+          expire = it.closeDate.toDate()
         )
         if (index != state.deposits.size.minus(1)) RowDivider()
       }
