@@ -2,6 +2,7 @@ package ru.kode.base.internship.products.domain
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -33,6 +34,7 @@ interface ProductUseCase {
   val depositsList: Flow<List<DepositDetails>>
 }
 
+@ExperimentalCoroutinesApi
 internal class ProductUseCaseImpl @Inject constructor(
   private val scope: CoroutineScope,
   private val accountRepository: AccountRepository,
@@ -51,7 +53,7 @@ internal class ProductUseCaseImpl @Inject constructor(
     scope.launch(Dispatchers.IO) {
       setState { copy(accountsState = LceState.Loading) }
       try {
-        delay(TimeUnit.SECONDS.toMillis(1)) // Для визуального отображения, что крутилка работает
+        delay(TimeUnit.SECONDS.toMillis(1))
         accountRepository.fetchAccount(isNew = update)
         setState { copy(accountsState = LceState.Content) }
       } catch (e: Exception) {
@@ -71,7 +73,7 @@ internal class ProductUseCaseImpl @Inject constructor(
     scope.launch(Dispatchers.IO) {
       setState { copy(cardsState = LceState.Loading) }
       try {
-        delay(TimeUnit.SECONDS.toMillis(1)) // Для визуального отображения, что крутилка работает
+        delay(TimeUnit.SECONDS.toMillis(1))
         cardRepository.fetchCards(isNew = update)
         setState { copy(cardsState = LceState.Content) }
       } catch (e: Exception) {
@@ -110,7 +112,7 @@ internal class ProductUseCaseImpl @Inject constructor(
     scope.launch(Dispatchers.IO) {
       setState { copy(depositsState = LceState.Loading) }
       try {
-        delay(TimeUnit.SECONDS.toMillis(1)) // Для визуального отображения, что крутилка работает
+        delay(TimeUnit.SECONDS.toMillis(1))
         depositRepository.fetchDeposits(isNew = update)
         setState { copy(depositsState = LceState.Content) }
       } catch (e: Exception) {

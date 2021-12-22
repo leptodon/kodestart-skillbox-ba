@@ -5,8 +5,6 @@ import ru.kode.base.core.BaseViewIntents
 import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.domain.entity.Account
 import ru.kode.base.internship.products.domain.entity.AccountWithCards
-import ru.kode.base.internship.products.domain.entity.CardDetails
-import ru.kode.base.internship.products.domain.entity.Deposit
 import ru.kode.base.internship.products.domain.entity.DepositDetails
 
 

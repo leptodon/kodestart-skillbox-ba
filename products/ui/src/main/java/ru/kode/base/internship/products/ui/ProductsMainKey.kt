@@ -7,7 +7,6 @@ import ru.kode.base.core.model.ScreenKey
 
 @Parcelize
 object ProductsMainKey : ScreenKey() {
-  // See NOTE_IGNORED_ON_PARCEL_AND_OBJECT
   @Suppress("INAPPLICABLE_IGNORED_ON_PARCEL")
   @IgnoredOnParcel
   override val componentConfig = ComponentConfig(

@@ -42,4 +42,4 @@ fun String.getResByPaymentSystem(): Int {
 }
 
 /** Конвертация даты к виду 31.08.2024 */
-fun String.toDate():String = OffsetDateTime.parse(this).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+fun String.toDate(): String = OffsetDateTime.parse(this).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))

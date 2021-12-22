@@ -191,7 +191,7 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
       )
       state.deposits.takeIf { it.isNotEmpty() }?.forEachIndexed { index, it ->
         DepositView(
-          name = it.name?:"",
+          name = it.name ?: "",
           balance = it.balance,
           currency = it.currency,
           rate = it.rate,
