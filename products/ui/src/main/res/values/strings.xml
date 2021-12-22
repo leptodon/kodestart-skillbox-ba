@@ -4,4 +4,11 @@
   <string name="button_text">"Открыть новый счет или продукт"</string>
   <string name="deposit_title">"Главная"</string>
   <string name="seving_title">Главная</string>
+  <string name="deposits">Вклады</string>
+  <string name="phisical">Физическая</string>
+  <string name="digital">Виртуальная</string>
+  <string name="account">Счета</string>
+  <string name="main_account">Счет расчетный</string>
+  <string name="rate">Ставка</string>
+  <string name="until">До</string>
 </resources>
