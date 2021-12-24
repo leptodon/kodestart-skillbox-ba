@@ -5,6 +5,7 @@ import coil.ImageLoader
 import okhttp3.OkHttpClient
 import ru.kode.base.core.annotations.ApplicationContext
 import ru.kode.base.internship.core.data.di.DataBindings
+import ru.kode.base.internship.products.data.storage.SqlDelightBindings
 import toothpick.config.Module
 import javax.inject.Inject
 import javax.inject.Provider
@@ -16,6 +17,7 @@ internal class KodeApplicationModule(application: KodeApplication) : Module() {
     bind(ImageLoader::class.java).toProvider(ImageLoaderProvider::class.java).providesSingletonInScope()
 
     DataBindings.bindInto(this)
+    SqlDelightBindings.bindInto(this)
   }
 }
 

@@ -15,7 +15,9 @@ import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.domain.entity.Account
 import ru.kode.base.internship.products.domain.entity.AccountWithCards
 import ru.kode.base.internship.products.domain.entity.CardDetails
+import ru.kode.base.internship.products.domain.entity.Deposit
 import ru.kode.base.internship.products.domain.entity.DepositDetails
+import ru.kode.base.internship.products.domain.entity.DepositWithDetails
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -26,12 +28,14 @@ interface ProductUseCase {
 
   fun fetchCards(update: Boolean = false)
   val fetchCardState: Flow<LceState>
-  fun cardDetails(id: Long): Flow<CardDetails>
-  val resultCardDetailsList: Flow<List<AccountWithCards>>
+  fun cardDetails(id: String): Flow<CardDetails>
+  val accountListWithCards: Flow<List<AccountWithCards>>
 
   fun fetchDeposits(update: Boolean = false)
   val fetchDepositState: Flow<LceState>
-  val depositsList: Flow<List<DepositDetails>>
+  val depositsList: Flow<List<Deposit>>
+  fun depositsDetails(id: Long): Flow<DepositDetails>
+  val depositListWithDetails: Flow<List<DepositWithDetails>>
 }
 
 @ExperimentalCoroutinesApi
@@ -40,8 +44,7 @@ internal class ProductUseCaseImpl @Inject constructor(
   private val accountRepository: AccountRepository,
   private val cardRepository: CardRepository,
   private val depositRepository: DepositRepository,
-
-  ) : BaseUseCase<ProductUseCaseImpl.State>(scope, State()), ProductUseCase {
+) : BaseUseCase<ProductUseCaseImpl.State>(scope, State()), ProductUseCase {
 
   data class State(
     val accountsState: LceState = LceState.None,
@@ -82,28 +85,51 @@ internal class ProductUseCaseImpl @Inject constructor(
     }
   }
 
-  override fun cardDetails(id: Long): Flow<CardDetails> = cardRepository.cardDetails(id = id)
+  override fun cardDetails(id: String): Flow<CardDetails> = cardRepository.cardDetails(id = id)
 
-  override val resultCardDetailsList: Flow<List<AccountWithCards>>
+  override val accountListWithCards: Flow<List<AccountWithCards>>
     get() {
       return accountRepository.accounts.flatMapLatest { accounts ->
         val listOfAccountWithCardsFlow = accounts.map { account ->
           val cardsFlow = account.cards.map { cardId -> cardRepository.cardDetails(cardId) }
           combine(cardsFlow) { it.toList() }
-            .map {
+            .map { itListCardDetails ->
               AccountWithCards(
                 accountId = account.accountId,
                 currency = account.currency,
                 status = account.status,
                 balance = account.balance,
                 number = account.number,
-                cards = it
+                cards = itListCardDetails
               )
             }
         }
         combine(listOfAccountWithCardsFlow) { it.toList() }
       }
     }
+
+  override fun depositsDetails(id: Long): Flow<DepositDetails> = depositRepository.depositDetails(id)
+
+  override val depositListWithDetails: Flow<List<DepositWithDetails>>
+    get() {
+      return depositRepository.deposits.flatMapLatest { deposits ->
+        val depositTermsFlow = deposits.map { deposit ->
+          depositsDetails(deposit.depositId)
+            .map {
+              DepositWithDetails(
+                depositId = deposit.depositId,
+                status = deposit.status,
+                currency = deposit.currency,
+                balance = deposit.balance,
+                name = deposit.name,
+                details = it
+              )
+            }
+        }
+        combine(depositTermsFlow) { it.toList() }
+      }
+    }
+
 
   override val fetchCardState: Flow<LceState>
     get() = stateFlow.map { it.cardsState }.distinctUntilChanged()
@@ -124,8 +150,7 @@ internal class ProductUseCaseImpl @Inject constructor(
   override val fetchDepositState: Flow<LceState>
     get() = stateFlow.map { it.depositsState }.distinctUntilChanged()
 
-
-  override val depositsList: Flow<List<DepositDetails>>
+  override val depositsList: Flow<List<Deposit>>
     get() = depositRepository.deposits
 
 }

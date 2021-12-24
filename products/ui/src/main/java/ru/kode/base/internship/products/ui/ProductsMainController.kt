@@ -54,7 +54,7 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
   @Composable
   override fun ScreenContent(state: ViewState) {
     SwipeRefresh(
-      state = rememberSwipeRefreshState(isRefreshing = state.cardsLceState == LceState.Loading),
+      state = rememberSwipeRefreshState(isRefreshing = state.accountsLceState == LceState.Loading),
       onRefresh = {
         intents.getData()
       },
@@ -70,10 +70,18 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
         modifier = Modifier.verticalScroll(rememberScrollState())
       ) {
         StatusBar()
-        DepositList(state)
+
+        if (!state.accountWithCardDetails.isNullOrEmpty()) {
+          AccountList(state)
+        }
+
         Spacer(
           modifier = Modifier.height(16.dp))
-        DepositsList(state)
+
+        if (!state.accountWithCardDetails.isNullOrEmpty()) {
+          DepositsList(state)
+        }
+
         PrimaryButton(
           modifier = Modifier
             .padding(16.dp, 16.dp, 16.dp, 24.dp)
@@ -101,9 +109,10 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
   }
 
   @Composable
-  fun DepositList(state: ViewState) {
+  fun AccountList(state: ViewState) {
     var expanded by remember { mutableStateOf(true) }
-    val accounts = state.accountWithCardDetails[0]
+    val accounts = state.accountWithCardDetails?.get(0)!!
+
     Column(
       modifier = Modifier
         .background(color = AppTheme.colors.backgroundSecondary)
@@ -155,7 +164,7 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
           accounts.takeIf { it.cards.isNotEmpty() }?.cards?.forEachIndexed { index, it ->
             CardView(
               name = it.name,
-              number = it.number,
+              number = it.number.takeLast(4),
               paymentSystem = it.paymentSystem,
               status = it.status,
               cardType = stringResource(id = R.string.phisical)
@@ -189,15 +198,15 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
         style = AppTheme.typography.bodySemibold,
         color = AppTheme.colors.contendTertiary
       )
-      state.deposits.takeIf { it.isNotEmpty() }?.forEachIndexed { index, it ->
+      state.depositsWithDetails.takeIf { it.isNotEmpty() }?.forEachIndexed { index, it ->
         DepositView(
-          name = it.name ?: "",
+          name = it.name,
           balance = it.balance,
           currency = it.currency,
-          rate = it.rate,
-          expire = it.closeDate.toDate()
+          rate = it.details.rate,
+          expire = it.details.closeDate.toDate()
         )
-        if (index != state.deposits.size.minus(1)) RowDivider()
+        if (index != state.depositsWithDetails.size.minus(1)) RowDivider()
       }
     }
   }

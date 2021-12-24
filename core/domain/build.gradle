@@ -40,4 +40,8 @@ android {
 
 dependencies {
   api project(':core')
+  api Deps.moshi
+  api Deps.moshiKotlin
+
+  kapt Deps.moshiProcessor
 }

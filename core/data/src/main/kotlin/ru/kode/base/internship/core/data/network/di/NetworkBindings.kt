@@ -77,7 +77,7 @@ internal class AuthorizedRetrofitProvider @Inject constructor(
   }
 }
 
-internal const val BASE_URL = "https://stoplight.io/mocks/kode-education/kode-bank/27774162"
+internal const val BASE_URL = "https://stoplight.io/mocks/kode-education/kode-bank"
 internal const val HTTP_CONNECT_TIMEOUT = 60_000L
 internal val HTTP_LOG_LEVEL =
   if (BuildConfig.RELEASE) HttpLoggingInterceptor.Level.BASIC else HttpLoggingInterceptor.Level.BODY

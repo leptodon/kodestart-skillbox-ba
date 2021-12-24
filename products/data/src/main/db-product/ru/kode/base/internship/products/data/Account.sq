@@ -1,0 +1,23 @@
+CREATE TABLE AccountEntity (
+    accountId INTEGER NOT NULL PRIMARY KEY,
+    number TEXT NOT NULL,
+    balance INTEGER NOT NULL,
+    currency TEXT NOT NULL,
+    status TEXT NOT NULL,
+    cards TEXT
+);
+
+getAccountById:
+SELECT * FROM AccountEntity WHERE accountId = :accountId;
+
+getAllAccount:
+SELECT * FROM AccountEntity;
+
+insertAccount:
+INSERT OR REPLACE
+INTO AccountEntity
+VALUES (?, ?, ?, ?, ?, ?);
+
+deleteAccountById:
+DELETE FROM AccountEntity
+WHERE accountId = :accountId;

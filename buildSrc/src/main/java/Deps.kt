@@ -69,6 +69,7 @@ object Deps {
   const val okio = "com.squareup.okio:okio:$okioVersion"
   const val moshi = "com.squareup.moshi:moshi:$moshiVersion"
   const val moshiProcessor = "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
+  const val moshiKotlin = "com.squareup.moshi:moshi-kotlin:$moshiVersion"
 
   private const val retrofitVersion = "2.9.0"
   val retrofitLibs = arrayOf(

@@ -17,7 +17,7 @@ interface AppFlow {
         AuthDataModule(),
         AuthDomainModule(),
         ProductDomainModule(),
-        ProductDataModule()
+        ProductDataModule(),
       ),
       coordinatorClass = Coordinator::class.java
     )
