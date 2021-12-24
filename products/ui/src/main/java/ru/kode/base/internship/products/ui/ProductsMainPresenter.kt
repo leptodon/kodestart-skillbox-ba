@@ -37,14 +37,6 @@ internal class ProductsMainPresenter @Inject constructor(
       }
     }
 
-//    onEach(productUseCase.accountsList) {
-//      transitionTo { state, payload ->
-//        state.copy(
-//          accounts = payload
-//        )
-//      }
-//    }
-
     onEach(productUseCase.fetchCardState) {
       transitionTo { state, payload ->
         state.copy(

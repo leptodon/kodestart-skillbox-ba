@@ -1,0 +1,22 @@
+CREATE TABLE DepositEntity (
+    depositId INTEGER NOT NULL PRIMARY KEY,
+    balance INTEGER NOT NULL,
+    currency TEXT NOT NULL,
+    status TEXT NOT NULL,
+    name TEXT NOT NULL
+);
+
+getDepositById:
+SELECT * FROM DepositEntity WHERE depositId = :depositId;
+
+getAllDeposit:
+SELECT * FROM DepositEntity;
+
+insertDeposit:
+INSERT OR REPLACE
+INTO DepositEntity
+VALUES (?, ?, ?, ?, ?);
+
+deleteDepositById:
+DELETE FROM DepositEntity
+WHERE depositId = :depositId;

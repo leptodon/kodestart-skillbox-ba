@@ -15,6 +15,7 @@ internal class AccountRepositoryImpl @Inject constructor(
   private val api: ProductApi,
   private val db: ProductDataBase,
 ) : AccountRepository {
+
   val moshi: Moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
     .build()
@@ -23,7 +24,7 @@ internal class AccountRepositoryImpl @Inject constructor(
 
   override suspend fun fetchAccount(isNew: Boolean) {
     val accountQueries: AccountQueries = db.accountQueries
-    val accountListResponse = toDomainModel(api.accountList("android"))
+    val accountListResponse = toDomainModel(api.accountList())
     if (isNew) {
       accountQueries.transaction {
         accountListResponse.forEach { account ->
@@ -40,8 +41,6 @@ internal class AccountRepositoryImpl @Inject constructor(
       stateFlow.emit(getFromDb())
     }
   }
-
-  override val accountsMock: Flow<List<Account>> = stateFlow
 
   override val accounts: Flow<List<Account>> = stateFlow
 

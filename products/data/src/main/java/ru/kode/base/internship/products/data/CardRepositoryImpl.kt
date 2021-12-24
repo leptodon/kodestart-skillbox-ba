@@ -1,68 +1,121 @@
 package ru.kode.base.internship.products.data
 
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.squareup.sqldelight.runtime.coroutines.asFlow
+import com.squareup.sqldelight.runtime.coroutines.mapToOne
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.kode.base.internship.products.data.network.ProductApi
 import ru.kode.base.internship.products.data.network.entity.response.CardDetailsResponse
-import ru.kode.base.internship.products.data.network.entity.response.CardResponse
 import ru.kode.base.internship.products.domain.CardRepository
 import ru.kode.base.internship.products.domain.entity.CardDetails
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 internal class CardRepositoryImpl @Inject constructor(
   private val api: ProductApi,
+  private val db: ProductDataBase,
 ) : CardRepository {
 
-  private val stateFlow = MutableStateFlow(generateCardList())
+  val moshi: Moshi = Moshi.Builder()
+    .add(KotlinJsonAdapterFactory())
+    .build()
 
-  override suspend fun fetchCards(isNew: Boolean) {
-    if (isNew) {
-      stateFlow.emit(generateCardList())
+  init {
+    setupDb()
+  }
+
+  private fun setupDb() {
+    CoroutineScope(Dispatchers.IO).launch {
+      val cardDetailQueries = db.cardDetailQueries
+      val cards = api.accountList().accounts
+        .flatMap { it.cards }
+        .map { it.card_id }
+        .toList()
+        .map { api.getCardsById(it.toLong()) }
+
+      cardDetailQueries.transaction {
+        cards.forEach { detail ->
+          cardDetailQueries.insertCardDetail(
+            status = detail.status,
+            number = detail.number,
+            accountId = detail.accountId,
+            name = detail.name,
+            expiredAt = detail.expiredAt,
+            paymentSystem = detail.paymentSystem,
+            id = detail.id
+          )
+        }
+      }
     }
   }
 
-  override fun cardDetailsMock(id: String): Flow<CardDetails> = flow {
-    generateCardList().find { it.id == id }?.let { emit(it) }
+  override suspend fun fetchCards(isNew: Boolean) {
+    if (isNew) {
+      setupDb()
+    }
   }
 
-  override fun cardDetails(id: String): Flow<CardDetails> = flow {
-    emit(toDomainModel(api.getCardsById(id)))
+  override fun cardDetails(id: Long): Flow<CardDetails> = getFromDb(id)
+
+  private fun getFromDb(id: Long): Flow<CardDetails> {
+    val execute = db.cardDetailQueries.getCardDetailById(id)
+    if (execute.executeAsOneOrNull() != null) {
+      val toExecuteFlow = execute.asFlow().mapToOne().map {
+        CardDetails(
+          id = it.id,
+          paymentSystem = it.paymentSystem,
+          expiredAt = it.expiredAt,
+          name = it.name,
+          accountId = it.accountId,
+          number = it.number,
+          status = it.status
+        )
+      }
+      return toExecuteFlow
+    } else {
+      return flow { emit(toDomainModel(api.getCardsById(id))) }
+    }
   }
 
   private fun toDomainModel(cardResponse: CardDetailsResponse): CardDetails {
-   val card = CardDetails(
+    return CardDetails(
       accountId = 0,
       status = cardResponse.status,
       number = cardResponse.number,
-      id = cardResponse.id.toString(),
+      id = cardResponse.id,
       name = cardResponse.name,
       paymentSystem = cardResponse.paymentSystem,
       expiredAt = cardResponse.expiredAt,
     )
-    return card
   }
-
-  private fun generateCardList() = listOf(
-    CardDetails(
-      id = "66f6e46c-f6a1-4af8-a1bd-49666bc01304",
-      accountId = 0,
-      number = (1000..9999).random().toString(),
-      status = "DEACTIVE",
-      name = "Кредитная карта",
-      paymentSystem = "MASTERCARD",
-      expiredAt = "2022-04-21T00:00:00Z"
-    ),
-    CardDetails(
-      id = "66f6e46c-f6a1-4af8-a1bd-49666bc01304",
-      accountId = 0,
-      number = (1000..9999).random().toString(),
-      status = "ACTIVE",
-      name = "Дебетовая карта",
-      paymentSystem = "VISA",
-      expiredAt = "2022-04-21T00:00:00Z"
-    )
-  )
-
 }
+
+//    val executeDetails = db.cardDetailQueries.getCardDetailById(id).executeAsOneOrNull()
+//
+//    return if (executeDetails != null) {
+//        CardDetailsResponse(
+//          id = executeDetails.id,
+//          paymentSystem = executeDetails.paymentSystem,
+//          expiredAt = executeDetails.expiredAt,
+//          name = executeDetails.name,
+//          accountId = executeDetails.accountId,
+//          number = executeDetails.number,
+//          status = executeDetails.status
+//        )
+//    } else {
+//      null
+//    }
+//  }
+

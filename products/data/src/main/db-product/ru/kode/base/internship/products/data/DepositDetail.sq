@@ -1,0 +1,24 @@
+CREATE TABLE DepositDetailEntity (
+    depositId INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    balance INTEGER NOT NULL,
+    currency TEXT NOT NULL,
+    rate REAL NOT NULL,
+    status TEXT NOT NULL,
+    closeDate TEXT NOT NULL
+);
+
+getDepositDetailById:
+SELECT * FROM DepositDetailEntity WHERE depositId = :depositId;
+
+getAllDepositDetail:
+SELECT * FROM DepositDetailEntity;
+
+insertDepositDetail:
+INSERT OR REPLACE
+INTO DepositDetailEntity
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+deleteDepositDetailById:
+DELETE FROM DepositDetailEntity
+WHERE depositId = :depositId;

@@ -11,14 +11,20 @@ import ru.kode.base.internship.products.data.network.entity.response.DepositList
 
 internal interface ProductApi {
   @GET("27774161/api/core/account/list")
-  suspend fun accountList(@Query("__example") android:String): AccountListResponse
+  suspend fun accountList(@Query("__example") android: String = "android"): AccountListResponse
 
   @GET("27774161/api/core/deposit/list")
-  suspend fun depositList(@Query("__example") android:String): DepositListResponse
+  suspend fun depositList(@Query("__example") android: String = "android"): DepositListResponse
 
   @GET("27774161/api/core/card/{cardId}")
-  suspend fun getCardsById(@Path("cardId") id: String): CardDetailsResponse
+  suspend fun getCardsById(
+    @Path("cardId") id: Long,
+    @Query("__example") android: String = "android-$id",
+  ): CardDetailsResponse
 
   @GET("27774161/api/core/deposit/{depositId}")
-  suspend fun getDepositsById(@Path("depositId") id: Long): DepositDetailsResponse
+  suspend fun getDepositsById(
+    @Path("depositId") id: Long,
+    @Query("__example") android: String = "android-$id",
+    ): DepositDetailsResponse
 }
