@@ -5,7 +5,9 @@ import ru.kode.base.core.BaseViewIntents
 import ru.kode.base.internship.core.domain.entity.LceState
 import ru.kode.base.internship.products.domain.entity.Account
 import ru.kode.base.internship.products.domain.entity.AccountWithCards
+import ru.kode.base.internship.products.domain.entity.Deposit
 import ru.kode.base.internship.products.domain.entity.DepositDetails
+import ru.kode.base.internship.products.domain.entity.DepositWithDetails
 
 
 internal object ProductsMainScreen {
@@ -19,9 +21,8 @@ internal object ProductsMainScreen {
     var cardsLceState: LceState = LceState.None,
     var accountsLceState: LceState = LceState.None,
     var depositsLceState: LceState = LceState.None,
-    var accounts: List<Account> = emptyList(),
     var accountWithCardDetails: List<AccountWithCards> = emptyList(),
-    var deposits: List<DepositDetails> = emptyList(),
+    var depositsWithDetails: List<DepositWithDetails> = emptyList(),
   )
 
   sealed class ErrorMessage {

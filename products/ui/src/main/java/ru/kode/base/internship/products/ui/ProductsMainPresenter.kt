@@ -6,6 +6,7 @@ import ru.kode.base.internship.products.domain.ProductUseCase
 import ru.kode.base.internship.products.ui.ProductsMainScreen.ViewIntents
 import ru.kode.base.internship.products.ui.ProductsMainScreen.ViewState
 import ru.kode.base.internship.routing.AppFlow
+import timber.log.Timber
 import javax.inject.Inject
 
 internal class ProductsMainPresenter @Inject constructor(
@@ -15,9 +16,9 @@ internal class ProductsMainPresenter @Inject constructor(
 
   override fun MachineDsl<ViewState, Unit>.buildMachine() {
     initial = ViewState() to {
-      productUseCase.fetchAccounts()
-      productUseCase.fetchCards()
-      productUseCase.fetchDeposits()
+      productUseCase.fetchAccounts(true)
+      productUseCase.fetchCards(true)
+      productUseCase.fetchDeposits(true)
     }
 
     onEach(intent(ViewIntents::getData)) {
@@ -32,14 +33,6 @@ internal class ProductsMainPresenter @Inject constructor(
       transitionTo { state, payload ->
         state.copy(
           accountsLceState = payload
-        )
-      }
-    }
-
-    onEach(productUseCase.accountsList) {
-      transitionTo { state, payload ->
-        state.copy(
-          accounts = payload
         )
       }
     }
@@ -60,7 +53,7 @@ internal class ProductsMainPresenter @Inject constructor(
       }
     }
 
-    onEach(productUseCase.resultCardDetailsList) {
+    onEach(productUseCase.accountListWithCards) {
       transitionTo { state, payload ->
         state.copy(
           accountWithCardDetails = payload
@@ -68,10 +61,10 @@ internal class ProductsMainPresenter @Inject constructor(
       }
     }
 
-    onEach(productUseCase.depositsList) {
+    onEach(productUseCase.depositListWithDetails) {
       transitionTo { state, payload ->
         state.copy(
-          deposits = payload
+          depositsWithDetails = payload
         )
       }
     }

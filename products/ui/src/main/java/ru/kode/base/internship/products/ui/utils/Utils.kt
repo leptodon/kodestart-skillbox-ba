@@ -28,6 +28,7 @@ fun String.getResByCurrency(): Int {
     "RUB" to R.drawable.ic_rub_40,
     "USD" to R.drawable.ic_usd_40,
     "EUR" to R.drawable.ic_eur_40,
+    "empty" to R.drawable.ic_base_currency_icon_40,
   )
   return if (map.contains(this)) map[this]!! else R.drawable.ic_base_currency_icon_40
 }
@@ -42,4 +43,10 @@ fun String.getResByPaymentSystem(): Int {
 }
 
 /** Конвертация даты к виду 31.08.2024 */
-fun String.toDate(): String = OffsetDateTime.parse(this).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+fun String.toDate(): String {
+  return try {
+    OffsetDateTime.parse(this).format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+  } catch (e: Exception) {
+    this
+  }
+}

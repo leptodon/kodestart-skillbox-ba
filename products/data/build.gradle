@@ -2,6 +2,14 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.squareup.sqldelight'
+
+sqldelight {
+  ProductDataBase {
+    packageName = "ru.kode.base.internship.products.data"
+    sourceFolders = ["db-product"]
+  }
+}
 
 android {
   compileSdk 31
@@ -43,4 +51,10 @@ dependencies {
   implementation project(":core:data")
   implementation project(":products:domain")
   kapt Deps.toothpickProcessor
+  kapt Deps.moshiProcessor
+
+  api Deps.sqlDelightRxCoroutines
+
+  implementation Deps.sqlDelightAndroidDriver
+  implementation Deps.okHttpLoggingInterceptor
 }

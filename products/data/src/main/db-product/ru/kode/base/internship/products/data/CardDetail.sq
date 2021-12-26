@@ -1,0 +1,24 @@
+CREATE TABLE CardDetailEntity (
+  id INTEGER NOT NULL PRIMARY KEY,
+  accountId INTEGER NOT NULL,
+  number TEXT NOT NULL,
+  expiredAt TEXT NOT NULL,
+  paymentSystem TEXT NOT NULL,
+  status TEXT NOT NULL,
+  name TEXT NOT NULL
+);
+
+getCardDetailById:
+SELECT * FROM CardDetailEntity WHERE id = :id;
+
+getAllCardDetail:
+SELECT * FROM CardDetailEntity;
+
+insertCardDetail:
+INSERT OR REPLACE
+INTO CardDetailEntity
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+deleteCardDetailById:
+DELETE FROM CardDetailEntity
+WHERE id = :id;

@@ -31,6 +31,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import ru.kode.base.internship.core.domain.entity.LceState
+import ru.kode.base.internship.products.domain.entity.AccountWithCards
 import ru.kode.base.internship.products.ui.ProductsMainScreen.ViewIntents
 import ru.kode.base.internship.products.ui.ProductsMainScreen.ViewState
 import ru.kode.base.internship.products.ui.component.CardView
@@ -54,7 +55,7 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
   @Composable
   override fun ScreenContent(state: ViewState) {
     SwipeRefresh(
-      state = rememberSwipeRefreshState(isRefreshing = state.cardsLceState == LceState.Loading),
+      state = rememberSwipeRefreshState(isRefreshing = state.accountsLceState == LceState.Loading),
       onRefresh = {
         intents.getData()
       },
@@ -67,13 +68,31 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
       }
     ) {
       Column(
-        modifier = Modifier.verticalScroll(rememberScrollState())
+        modifier = Modifier
+          .verticalScroll(rememberScrollState())
+          .padding(bottom = 24.dp)
       ) {
         StatusBar()
-        DepositList(state)
+        Text(
+          text = stringResource(id = R.string.account),
+          modifier = Modifier
+            .padding(bottom = 15.dp, start = 16.dp, top = 17.dp)
+            .fillMaxSize(),
+          style = AppTheme.typography.bodySemibold,
+          color = AppTheme.colors.contendTertiary)
+        if (!state.accountWithCardDetails.isNullOrEmpty()) {
+          state.accountWithCardDetails.forEach {
+            AccountList(account = it)
+          }
+        }
+
         Spacer(
           modifier = Modifier.height(16.dp))
-        DepositsList(state)
+
+        if (!state.accountWithCardDetails.isNullOrEmpty()) {
+          DepositsList(state)
+        }
+
         PrimaryButton(
           modifier = Modifier
             .padding(16.dp, 16.dp, 16.dp, 24.dp)
@@ -101,30 +120,19 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
   }
 
   @Composable
-  fun DepositList(state: ViewState) {
+  fun AccountList(account: AccountWithCards) {
     var expanded by remember { mutableStateOf(true) }
-    val accounts = state.accountWithCardDetails[0]
     Column(
       modifier = Modifier
         .background(color = AppTheme.colors.backgroundSecondary)
         .padding(16.dp)
     ) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically
-      ) {
-        Text(
-          text = stringResource(id = R.string.account),
-          modifier = Modifier
-            .padding(bottom = 17.dp)
-            .fillMaxSize(),
-          style = AppTheme.typography.bodySemibold,
-          color = AppTheme.colors.contendTertiary)
-      }
+
       Row(
         verticalAlignment = Alignment.CenterVertically
       ) {
         Image(
-          painter = painterResource(id = accounts.currency.getResByCurrency()),
+          painter = painterResource(id = account.currency.getResByCurrency()),
           contentDescription = "")
         Column(
           modifier = Modifier
@@ -137,7 +145,7 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
           )
           Spacer(modifier = Modifier.height(4.dp))
           Text(
-            text = "${accounts.balance} ${accounts.currency.getSymbol()}",
+            text = "${account.balance} ${account.currency.getSymbol()}",
             style = AppTheme.typography.body2
           )
         }
@@ -149,18 +157,18 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
           )
         }
       }
-      Spacer(modifier = Modifier.height(16.dp))
+      Spacer(modifier = Modifier.height(8.dp))
       if (expanded) {
         Column {
-          accounts.takeIf { it.cards.isNotEmpty() }?.cards?.forEachIndexed { index, it ->
+          account.takeIf { it.cards.isNotEmpty() }?.cards?.forEachIndexed { index, it ->
             CardView(
               name = it.name,
-              number = it.number,
+              number = it.number.takeLast(4),
               paymentSystem = it.paymentSystem,
               status = it.status,
               cardType = stringResource(id = R.string.phisical)
             )
-            if (index != accounts.cards.size.minus(1)) RowDivider()
+            if (index != account.cards.size.minus(1)) RowDivider()
           }
         }
       }
@@ -189,15 +197,15 @@ internal class ProductsMainController : KodeBankBaseController<ViewState, ViewIn
         style = AppTheme.typography.bodySemibold,
         color = AppTheme.colors.contendTertiary
       )
-      state.deposits.takeIf { it.isNotEmpty() }?.forEachIndexed { index, it ->
+      state.depositsWithDetails.takeIf { it.isNotEmpty() }?.forEachIndexed { index, it ->
         DepositView(
-          name = it.name ?: "",
+          name = it.name,
           balance = it.balance,
           currency = it.currency,
-          rate = it.rate,
-          expire = it.closeDate.toDate()
+          rate = it.details.rate,
+          expire = it.details.closeDate.toDate()
         )
-        if (index != state.deposits.size.minus(1)) RowDivider()
+        if (index != state.depositsWithDetails.size.minus(1)) RowDivider()
       }
     }
   }

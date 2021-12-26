@@ -61,6 +61,7 @@ dependencies {
     implementation project(":routing")
     implementation project(":auth:ui")
     implementation project(":products:ui")
+    implementation project(":products:data")
 
     implementation Deps.coil
     implementation Deps.firebaseCore
